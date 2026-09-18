@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Arduino</title>
+<style>
+  :root{--bg:#ffffff;--card:#ffffff;--card2:#f3f6ff;--txt:#1f2937;--mut:#6b7280;--acc:#4f46e5;--ok:#16a34a;--bad:#dc2626;--warn:#f97316;--teal:#0d9488;--pink:#ec4899;--sky:#0ea5e9}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:#fff;color:var(--txt);min-height:100vh}
+  .wrap{max-width:760px;margin:0 auto;padding:20px 16px 60px}
+  h1{text-align:center;margin:10px 0 18px;font-size:2.2rem;letter-spacing:1px;background:linear-gradient(90deg,#4f46e5,#0ea5e9,#ec4899,#f97316);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .tabs{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:18px}
+  .tab{background:#fff;border:2px solid #e5e7eb;color:var(--txt);padding:10px 16px;border-radius:12px;cursor:pointer;font-size:1rem;font-weight:600;transition:.15s}
+  .tab:hover{transform:translateY(-2px)}
+  .tab[data-m=quiz]{border-color:#c7d2fe;color:#4f46e5}.tab[data-m=quiz].active{background:#4f46e5;color:#fff;border-color:#4f46e5}
+  .tab[data-m=puzzle]{border-color:#fed7aa;color:#ea580c}.tab[data-m=puzzle].active{background:#f97316;color:#fff;border-color:#f97316}
+  .tab[data-m=rapid]{border-color:#fbcfe8;color:#db2777}.tab[data-m=rapid].active{background:#ec4899;color:#fff;border-color:#ec4899}
+  #snd{border-color:#99f6e4;color:#0d9488}
+  .card{background:#fff;border:2px solid #eef0f7;border-radius:18px;padding:22px;box-shadow:0 8px 28px rgba(79,70,229,.12)}
+  .bar{height:10px;background:#e5e7eb;border-radius:8px;overflow:hidden;margin-bottom:14px}
+  .bar>div{height:100%;background:linear-gradient(90deg,#4f46e5,#0ea5e9,#14b8a6);width:0;transition:width .3s}
+  .meta{display:flex;justify-content:space-between;color:var(--mut);font-size:.9rem;margin-bottom:10px;font-weight:600}
+  .q{font-size:1.25rem;margin:8px 0 16px;line-height:1.4;font-weight:600}
+  .opt{display:block;width:100%;text-align:left;background:#f3f6ff;color:var(--txt);border:2px solid #dbe3ff;padding:13px 14px;border-radius:12px;margin:9px 0;font-size:1rem;cursor:pointer;transition:.15s}
+  .opt:nth-child(4n+1){background:#eef2ff;border-color:#c7d2fe}
+  .opt:nth-child(4n+2){background:#ecfeff;border-color:#a5f3fc}
+  .opt:nth-child(4n+3){background:#fff7ed;border-color:#fed7aa}
+  .opt:nth-child(4n+4){background:#fdf2f8;border-color:#fbcfe8}
+  .opt:hover:not(:disabled){border-color:var(--acc);transform:translateX(3px)}
+  .opt.ok{background:#dcfce7!important;border-color:var(--ok)!important;color:#14532d}
+  .opt.bad{background:#fee2e2!important;border-color:var(--bad)!important;color:#7f1d1d}
+  .opt:disabled{cursor:default}
+  input.ans{width:100%;padding:13px;border-radius:12px;border:2px solid #c7d2fe;background:#f8faff;color:var(--txt);font-size:1.1rem;text-transform:uppercase;letter-spacing:2px}
+  input.ans:focus{outline:none;border-color:var(--acc)}
+  .btn{background:var(--acc);color:#fff;border:0;padding:12px 22px;border-radius:12px;font-size:1rem;font-weight:600;cursor:pointer;margin-top:12px;margin-right:8px;box-shadow:0 4px 12px rgba(79,70,229,.3)}
+  .btn.ghost{background:#fff;color:var(--acc);border:2px solid var(--acc);box-shadow:none}
+  .btn:disabled{opacity:.5;cursor:default}
+  .fb{margin-top:12px;padding:12px;border-radius:10px;display:none;line-height:1.4}
+  .fb.ok{display:block;background:#dcfce7;border:1px solid var(--ok);color:#14532d}
+  .fb.bad{display:block;background:#fee2e2;border:1px solid var(--bad);color:#7f1d1d}
+  .scramble{font-size:2rem;letter-spacing:8px;text-align:center;margin:14px 0;color:var(--warn);font-weight:800}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+  .chip{background:#eef2ff;border:2px solid var(--acc);color:var(--acc);padding:10px 14px;border-radius:10px;cursor:pointer;font-size:1rem;font-weight:600}
+  .chip:nth-child(3n+2){background:#fff7ed;border-color:#f97316;color:#ea580c}
+  .chip:nth-child(3n+3){background:#fdf2f8;border-color:#ec4899;color:#db2777}
+  .chip.used{opacity:.3;pointer-events:none}
+  .seq{min-height:46px;background:#f8faff;border:2px dashed #c7d2fe;border-radius:10px;padding:8px;display:flex;gap:6px;flex-wrap:wrap;align-items:center;color:var(--mut)}
+  .seq span{background:var(--ok);color:#fff;padding:6px 10px;border-radius:8px}
+  .big{font-size:3rem;text-align:center;margin:8px 0}
+  .center{text-align:center}
+  .tf{display:flex;gap:12px}
+  .tf .opt{text-align:center;font-size:1.2rem;font-weight:700}
+  .tf .opt:nth-child(1){background:#dcfce7;border-color:#86efac;color:#166534}
+  .tf .opt:nth-child(2){background:#fee2e2;border-color:#fca5a5;color:#991b1b}
+  .timer{font-weight:700;color:var(--warn)}
+  .hint{color:var(--mut);font-size:.9rem;margin-top:6px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>ARDUINO</h1>
+  <div class="tabs">
+    <button class="tab active" data-m="quiz">🧠 Quiz (10)</button>
+    <button class="tab" data-m="puzzle">🧩 Puzzles (10)</button>
+    <button class="tab" data-m="rapid">⚡ Rapid Fire</button>
+    <button class="tab" id="snd">🔊 Sound On</button>
+  </div>
+  <div class="card" id="stage"></div>
+</div>
+
+<script>
+/* ---------- DATA ---------- */
+const QUIZ = [
+ {q:"What is Arduino?",o:["A small programmable computer that controls electronic components","A type of battery","A video game console","A Wi-Fi router"],a:0,e:"Arduino is a small programmable board that lets you control and interact with electronic components."},
+ {q:"Which part is the 'brain' of the Arduino Uno?",o:["USB Port","ATmega328P","Voltage Regulator","Reset Button"],a:1,e:"The ATmega328P microcontroller reads the program and decides what to do next: Think → Decide → Act."},
+ {q:"What does the USB Type-B port do?",o:["Only shows the time","Uploads code and provides 5V power","Plays sound","Stores photos"],a:1,e:"The USB port connects to your computer to upload code and also gives 5V power."},
+ {q:"Digital pins on the Uno are numbered…",o:["A0 – A5","D0 – D13","P1 – P20","V1 – V5"],a:1,e:"Digital pins are D0 to D13 and work with HIGH or LOW signals."},
+ {q:"Digital pins are like a…",o:["Volume knob","Light switch (ON / OFF)","Dimmer","Thermometer"],a:1,e:"A light switch is either ON or OFF – it cannot be a little bit ON. Same as HIGH / LOW."},
+ {q:"Analog pins read values from…",o:["0 to 1","0 to 255","0 to 1023","0 to 5000"],a:2,e:"Analog pins (A0–A5) read continuous values from 0 to 1023 (10-bit resolution)."},
+ {q:"Which is an example of an analog input?",o:["Push button","LED","Potentiometer","Buzzer"],a:2,e:"A potentiometer (like a volume knob) gives continuously changing values."},
+ {q:"Which symbol marks PWM pins on the Arduino?",o:["#","~","@","%"],a:1,e:"Pins marked with ~ (D3, D5, D6, D9, D10, D11) support PWM – used for brightness and motor speed."},
+ {q:"TX and RX pins are used for…",o:["Power supply","Serial communication","Resetting the board","Measuring light"],a:1,e:"TX transmits data, RX receives data – used for serial communication with a computer or modules."},
+ {q:"What is the correct order of how Arduino programming works?",o:["Upload → Code → Setup → Run","Setup → Code → Compile → Upload → Run","Run → Upload → Compile → Code","Compile → Setup → Run → Code"],a:1,e:"Setup → Code → Compile → Upload → Run (and fix errors if something goes wrong)."}
+];
+
+const PUZZLES = [
+ {t:"scramble",p:"Unscramble the word:",s:"UNIDORA",a:["ARDUINO"],h:"The board we learned about today"},
+ {t:"scramble",p:"Unscramble the word:",s:"GOLANA",a:["ANALOG"],h:"Continuous values, 0 to 1023"},
+ {t:"scramble",p:"Unscramble the word:",s:"TAIGIDL",a:["DIGITAL"],h:"HIGH or LOW only"},
+ {t:"text",p:"I am the brain of the Arduino Uno. My name ends with 328P. Who am I?",a:["ATMEGA328P","ATMEGA","MICROCONTROLLER"],h:"AT_ _ _ _328P"},
+ {t:"text",p:"How many analog pins does the Arduino Uno have? (A0 to A5)",a:["6","SIX"],h:"Count from A0 to A5"},
+ {t:"text",p:"In binary, what number means the light is OFF?",a:["0","ZERO"],h:"Binary digits are 0 and 1"},
+ {t:"text",p:"I connect the Arduino to your laptop, upload your code and give 5V power. What port am I?",a:["USB","USB PORT","USB TYPE-B","TYPE-B"],h:"Cable is blue in our slides"},
+ {t:"order",p:"Put the steps in order: how the Arduino works",items:["Setup","Code","Compile","Upload","Run"],h:"Start with setup, finish with run"},
+ {t:"order",p:"Put in order: Sense → Think → Act (Street light example)",items:["LDR senses darkness","Arduino checks the value","LED turns ON"],h:"Input → Brain → Output"},
+ {t:"order",p:"Put in order: from idea to action",items:["Idea","ATmega","Programming","Arduino","Action"],h:"Idea first, LED glows last"}
+];
+
+const RAPID = [
+ ["Arduino is a small programmable computer.",true],
+ ["ATmega328P is the brain of Arduino Uno.",true],
+ ["Digital pins can read values from 0 to 1023.",false],
+ ["Analog pins read values from 0 to 1023.",true],
+ ["A light switch is a good example of digital.",true],
+ ["A volume knob is a good example of digital.",false],
+ ["The USB port can upload code and give 5V power.",true],
+ ["Arduino Uno has 14 digital pins (D0–D13).",true],
+ ["Arduino Uno has 10 analog pins.",false],
+ ["The ~ symbol marks PWM pins.",true],
+ ["TX means Transmit and RX means Receive.",true],
+ ["Binary 1 means OFF.",false],
+ ["Binary 0 means OFF.",true],
+ ["digitalRead() returns 0 or 1.",true],
+ ["analogWrite() uses values from 0 to 1023.",false],
+ ["analogWrite() uses values from 0 to 255.",true],
+ ["Compile comes after Upload.",false],
+ ["The DC power jack accepts about 7–12V.",true],
+ ["A potentiometer is an analog input.",true],
+ ["A push button gives a continuous range of values.",false],
+ ["pinMode(pin, OUTPUT) is used to control an LED.",true],
+ ["Pins A0–A5 are used for serial communication.",false]
+];
+
+/* ---------- SOUND ---------- */
+let soundOn = true, actx;
+function ctx(){ actx = actx || new (window.AudioContext||window.webkitAudioContext)(); if(actx.state==='suspended') actx.resume(); return actx; }
+function beep(f,d,type='sine',v=.15,delay=0,to=null){
+  if(!soundOn) return;
+  try{
+    const c=ctx(), o=c.createOscillator(), g=c.createGain();
+    o.type=type; const t=c.currentTime+delay;
+    o.frequency.setValueAtTime(f,t);
+    if(to) o.frequency.exponentialRampToValueAtTime(to,t+d);
+    g.gain.setValueAtTime(0.0001,t);
+    g.gain.exponentialRampToValueAtTime(v,t+0.01);
+    g.gain.exponentialRampToValueAtTime(0.0001,t+d);
+    o.connect(g); g.connect(c.destination);
+    o.start(t); o.stop(t+d+0.02);
+  }catch(e){}
+}
+function noise(d=.3,from=400,to=4000,v=.12,delay=0){
+  if(!soundOn) return;
+  try{
+    const c=ctx(), n=Math.floor(c.sampleRate*d), buf=c.createBuffer(1,n,c.sampleRate), data=buf.getChannelData(0);
+    for(let i=0;i<n;i++) data[i]=Math.random()*2-1;
+    const src=c.createBufferSource(); src.buffer=buf;
+    const f=c.createBiquadFilter(); f.type='bandpass'; f.Q.value=2;
+    const t=c.currentTime+delay;
+    f.frequency.setValueAtTime(from,t); f.frequency.exponentialRampToValueAtTime(to,t+d);
+    const g=c.createGain(); g.gain.setValueAtTime(v,t); g.gain.exponentialRampToValueAtTime(0.0001,t+d);
+    src.connect(f); f.connect(g); g.connect(c.destination); src.start(t);
+  }catch(e){}
+}
+/* correct: happy rising arpeggio + sparkle */
+const sOK=()=>{
+  [523,659,784,1047].forEach((f,i)=>beep(f,.16,'triangle',.16,i*.07));
+  [2093,2637,3136].forEach((f,i)=>beep(f,.12,'sine',.05,.28+i*.05));
+};
+/* wrong: sad buzzer wah-wah */
+const sBAD=()=>{
+  beep(220,.22,'sawtooth',.13,0,150);
+  beep(165,.35,'sawtooth',.13,.2,90);
+  noise(.15,300,100,.06,0);
+};
+/* win: full fanfare with chords */
+const sWIN=()=>{
+  const chord=(fs,t,d)=>fs.forEach(f=>beep(f,d,'triangle',.11,t));
+  chord([523,659,784],0,.18); chord([523,659,784],.18,.18);
+  chord([659,784,1047],.36,.18); chord([784,988,1319],.6,.5);
+  [1568,2093,2637,3136].forEach((f,i)=>beep(f,.15,'sine',.06,.9+i*.08));
+  noise(.6,2000,8000,.05,.6);
+};
+/* soft encouragement (low scores) */
+const sTRY=()=>{[392,349,330,294].forEach((f,i)=>beep(f,.22,'sine',.12,i*.16))};
+/* UI sounds */
+const sCLICK=()=>{beep(880,.05,'square',.05); beep(1320,.05,'square',.04,.04)};
+const sPOP=n=>{beep(400+n*90,.09,'sine',.14,0,700+n*90)};
+const sWHOOSH=()=>{noise(.35,300,5000,.1); beep(300,.3,'sine',.04,0,900)};
+const sTICK=()=>{beep(1000,.04,'square',.05)};
+const sOVER=()=>{[784,659,523,392,262].forEach((f,i)=>beep(f,.2,'sawtooth',.08,i*.12)); noise(.4,3000,200,.06,.3)};
+const sSTART=()=>{[392,523,659,784].forEach((f,i)=>beep(f,.1,'square',.06,i*.07)); noise(.3,500,6000,.06)};
+const sSTREAK=n=>{
+  const base=523*Math.pow(1.059463,Math.min(n,12));
+  beep(base,.1,'square',.07); beep(base*1.5,.14,'triangle',.1,.08); beep(base*2,.2,'sine',.09,.16);
+  noise(.25,1500,7000,.05,.05);
+};
+document.getElementById('snd').onclick=e=>{
+  soundOn=!soundOn; e.target.textContent=soundOn?'🔊 Sound On':'🔇 Sound Off';
+  if(soundOn) sSTART();
+};
+
+/* ---------- HELPERS ---------- */
+const stage=document.getElementById('stage');
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const esc=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+function result(score,total,restart){
+  const pct=Math.round(score/total*100);
+  const msg=pct>=90?"🏆 Arduino Master!":pct>=70?"🎉 Great job!":pct>=40?"👍 Good try – revise the slides!":"📚 Keep learning, you'll get it!";
+  if(pct>=70) sWIN(); else sTRY();
+  stage.innerHTML=`<div class="center"><div class="big">${msg.split(' ')[0]}</div>
+  <h2>${msg.replace(/^\S+\s/,'')}</h2><p style="font-size:1.4rem">Score: <b>${score} / ${total}</b> (${pct}%)</p>
+  <button class="btn" id="again">Play Again</button></div>`;
+  document.getElementById('again').onclick=restart;
+}
+
+/* ---------- QUIZ ---------- */
+function startQuiz(){
+  const qs=shuffle(QUIZ).map(q=>{const c=q.o[q.a];const o=shuffle(q.o);return{...q,o,a:o.indexOf(c)}});
+  let i=0,score=0;
+  function show(){
+    const q=qs[i];
+    stage.innerHTML=`<div class="bar"><div style="width:${i/qs.length*100}%"></div></div>
+    <div class="meta"><span>Question ${i+1} / ${qs.length}</span><span>Score: ${score}</span></div>
+    <div class="q">${esc(q.q)}</div>
+    ${q.o.map((t,k)=>`<button class="opt" data-k="${k}">${esc(t)}</button>`).join('')}
+    <div class="fb" id="fb"></div><div id="nx"></div>`;
+    stage.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{
+      const k=+b.dataset.k; const ok=k===q.a;
+      stage.querySelectorAll('.opt').forEach((x,j)=>{x.disabled=true;if(j===q.a)x.classList.add('ok')});
+      if(ok){score++;sOK()}else{b.classList.add('bad');sBAD()}
+      const fb=document.getElementById('fb');fb.className='fb '+(ok?'ok':'bad');
+      fb.innerHTML=(ok?'✅ Correct! ':'❌ Not quite. ')+esc(q.e);
+      document.getElementById('nx').innerHTML=`<button class="btn" id="n">${i===qs.length-1?'See Result':'Next →'}</button>`;
+      document.getElementById('n').onclick=()=>{i++;i<qs.length?show():result(score,qs.length,startQuiz)};
+    });
+  }
+  show();
+}
+
+/* ---------- PUZZLES ---------- */
+function startPuzzle(){
+  const ps=shuffle(PUZZLES);
+  let i=0,score=0;
+  function show(){
+    const p=ps[i]; let done=false;
+    let body='';
+    if(p.t==='scramble') body=`<div class="scramble">${p.s.split('').join(' ')}</div><input class="ans" id="ans" placeholder="Your answer" autocomplete="off">`;
+    if(p.t==='text') body=`<input class="ans" id="ans" placeholder="Your answer" autocomplete="off">`;
+    if(p.t==='order') body=`<div class="hint">Tap the steps in the correct order:</div><div class="seq" id="seq">…</div><div class="chips" id="chips">${shuffle(p.items).map(t=>`<button class="chip">${esc(t)}</button>`).join('')}</div>`;
+    stage.innerHTML=`<div class="bar"><div style="width:${i/ps.length*100}%"></div></div>
+    <div class="meta"><span>Puzzle ${i+1} / ${ps.length}</span><span>Score: ${score}</span></div>
+    <div class="q">${esc(p.p)}</div>${body}
+    <div class="hint">💡 Hint: ${esc(p.h)}</div>
+    <div class="fb" id="fb"></div>
+    <div id="ctl">${p.t==='order'?'<button class="btn ghost" id="reset">Reset</button>':'<button class="btn" id="chk">Check</button>'}</div>`;
+    const fb=document.getElementById('fb');
+    function finish(ok,answerText){
+      if(done)return;done=true;
+      if(ok){score++;sOK()}else sBAD();
+      fb.className='fb '+(ok?'ok':'bad');
+      fb.innerHTML=ok?'✅ Correct!':'❌ Answer: <b>'+esc(answerText)+'</b>';
+      document.getElementById('ctl').innerHTML=`<button class="btn" id="n">${i===ps.length-1?'See Result':'Next →'}</button>`;
+      document.getElementById('n').onclick=()=>{i++;i<ps.length?show():result(score,ps.length,startPuzzle)};
+    }
+    if(p.t==='order'){
+      let picked=[];
+      const seq=document.getElementById('seq');
+      const chips=[...document.querySelectorAll('.chip')];
+      chips.forEach(c=>c.onclick=()=>{
+        if(done)return;
+        const expected=p.items[picked.length];
+        if(c.textContent===expected){
+          picked.push(c.textContent);c.classList.add('used');sPOP(picked.length);
+          seq.innerHTML=picked.map(x=>`<span>${esc(x)}</span>`).join(' → ');
+          if(picked.length===p.items.length) finish(true);
+        } else { sBAD(); seq.style.outline='2px solid var(--bad)'; setTimeout(()=>seq.style.outline='',300); }
+      });
+      document.getElementById('reset').onclick=()=>finish(false,p.items.join(' → '));
+      document.getElementById('reset').textContent='Show answer';
+    } else {
+      const inp=document.getElementById('ans'); inp.focus();
+      const check=()=>{const v=inp.value.trim().toUpperCase();if(!v)return;finish(p.a.includes(v),p.a[0])};
+      document.getElementById('chk').onclick=check;
+      inp.onkeydown=e=>{if(e.key==='Enter')check()};
+    }
+  }
+  show();
+}
+
+/* ---------- RAPID FIRE ---------- */
+function startRapid(){
+  stage.innerHTML=`<div class="center"><div class="big">⚡</div><h2>Rapid Fire</h2>
+  <p>True or False? Answer as many as you can in <b>45 seconds</b>.<br>+1 for correct, wrong answers cost 3 seconds.</p>
+  <button class="btn" id="go">Start!</button></div>`;
+  document.getElementById('go').onclick=()=>{sSTART();run()};
+  function run(){
+    const qs=shuffle(RAPID);let i=0,score=0,streak=0,best=0,time=45,locked=false;
+    function show(){
+      if(i>=qs.length){end();return}
+      stage.innerHTML=`<div class="meta"><span class="timer" id="tm">⏱ ${time}s</span><span>Score: ${score} &nbsp;🔥 Streak: ${streak}</span></div>
+      <div class="q center" style="min-height:70px">${esc(qs[i][0])}</div>
+      <div class="tf"><button class="opt" data-v="1">✔ TRUE</button><button class="opt" data-v="0">✘ FALSE</button></div>`;
+      stage.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{
+        if(locked)return;locked=true;
+        const ok=(b.dataset.v==='1')===qs[i][1];
+        b.classList.add(ok?'ok':'bad');
+        if(ok){score++;streak++;best=Math.max(best,streak);streak>=3?sSTREAK(streak):sOK()}else{streak=0;time=Math.max(0,time-3);sBAD()}
+        setTimeout(()=>{locked=false;i++;time>0?show():end()},350);
+      });
+    }
+    const iv=setInterval(()=>{
+      time--;if(time>0&&time<=10)sTICK();const t=document.getElementById('tm');if(t)t.textContent='⏱ '+Math.max(time,0)+'s';
+      if(time<=0){clearInterval(iv);end()}
+    },1000);
+    let ended=false;
+    function end(){
+      if(ended)return;ended=true;clearInterval(iv);
+      if(score>=8)sWIN(); else sOVER();
+      stage.innerHTML=`<div class="center"><div class="big">${score>=10?'🏆':score>=6?'🎉':'👍'}</div><h2>Time's up!</h2>
+      <p style="font-size:1.4rem">Score: <b>${score}</b> &nbsp;|&nbsp; Best streak: <b>${best}</b></p>
+      <button class="btn" id="again">Play Again</button></div>`;
+      document.getElementById('again').onclick=startRapid;
+    }
+    show();
+  }
+}
+
+/* ---------- TABS ---------- */
+const modes={quiz:startQuiz,puzzle:startPuzzle,rapid:startRapid};
+document.querySelectorAll('.tab[data-m]').forEach(t=>t.onclick=()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active');sWHOOSH();modes[t.dataset.m]();
+});
+document.addEventListener('click',e=>{if(e.target.closest('.btn'))sCLICK()});
+startQuiz();
+</script>
+</body>
+</html>
