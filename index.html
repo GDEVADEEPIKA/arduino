@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Arduino</title>
+<title>Sensors</title>
 <style>
   :root{--bg:#ffffff;--card:#ffffff;--card2:#f3f6ff;--txt:#1f2937;--mut:#6b7280;--acc:#4f46e5;--ok:#16a34a;--bad:#dc2626;--warn:#f97316;--teal:#0d9488;--pink:#ec4899;--sky:#0ea5e9}
   *{box-sizing:border-box}
@@ -59,7 +59,7 @@
 </head>
 <body>
 <div class="wrap">
-  <h1>ARDUINO</h1>
+  <h1>SENSORS</h1>
   <div class="tabs">
     <button class="tab active" data-m="quiz">🧠 Quiz (10)</button>
     <button class="tab" data-m="puzzle">🧩 Puzzles (10)</button>
@@ -70,56 +70,54 @@
 </div>
 
 <script>
-/* ---------- DATA ---------- */
+/* ---------- DATA (from Workshop Session 3 - Sensors) ---------- */
 const QUIZ = [
- {q:"What is Arduino?",o:["A small programmable computer that controls electronic components","A type of battery","A video game console","A Wi-Fi router"],a:0,e:"Arduino is a small programmable board that lets you control and interact with electronic components."},
- {q:"Which part is the 'brain' of the Arduino Uno?",o:["USB Port","ATmega328P","Voltage Regulator","Reset Button"],a:1,e:"The ATmega328P microcontroller reads the program and decides what to do next: Think → Decide → Act."},
- {q:"What does the USB Type-B port do?",o:["Only shows the time","Uploads code and provides 5V power","Plays sound","Stores photos"],a:1,e:"The USB port connects to your computer to upload code and also gives 5V power."},
- {q:"Digital pins on the Uno are numbered…",o:["A0 – A5","D0 – D13","P1 – P20","V1 – V5"],a:1,e:"Digital pins are D0 to D13 and work with HIGH or LOW signals."},
- {q:"Digital pins are like a…",o:["Volume knob","Light switch (ON / OFF)","Dimmer","Thermometer"],a:1,e:"A light switch is either ON or OFF – it cannot be a little bit ON. Same as HIGH / LOW."},
- {q:"Analog pins read values from…",o:["0 to 1","0 to 255","0 to 1023","0 to 5000"],a:2,e:"Analog pins (A0–A5) read continuous values from 0 to 1023 (10-bit resolution)."},
- {q:"Which is an example of an analog input?",o:["Push button","LED","Potentiometer","Buzzer"],a:2,e:"A potentiometer (like a volume knob) gives continuously changing values."},
- {q:"Which symbol marks PWM pins on the Arduino?",o:["#","~","@","%"],a:1,e:"Pins marked with ~ (D3, D5, D6, D9, D10, D11) support PWM – used for brightness and motor speed."},
- {q:"TX and RX pins are used for…",o:["Power supply","Serial communication","Resetting the board","Measuring light"],a:1,e:"TX transmits data, RX receives data – used for serial communication with a computer or modules."},
- {q:"What is the correct order of how Arduino programming works?",o:["Upload → Code → Setup → Run","Setup → Code → Compile → Upload → Run","Run → Upload → Compile → Code","Compile → Setup → Run → Code"],a:1,e:"Setup → Code → Compile → Upload → Run (and fix errors if something goes wrong)."}
+ {q:"What is a sensor?",o:["A device that detects a change in the surroundings and sends information to an electronic system","A device that only stores electricity","A type of computer screen","A device that generates light on its own"],a:0,e:"A sensor detects a change around it and sends that information to an electronic system to act on."},
+ {q:"An LDR (Light Dependent Resistor) senses changes in:",o:["Temperature","Light","Sound","Distance"],a:1,e:"An LDR detects the amount of light around it — its resistance changes with light intensity."},
+ {q:"When there is MORE light on an LDR, its resistance:",o:["Increases","Stays the same","Decreases","Becomes zero"],a:2,e:"More light → Resistance decreases. Less light → Resistance increases."},
+ {q:"In an automatic street light using an LDR, what happens during the DAY?",o:["LDR detects more light, light stays OFF","LDR detects less light, light turns ON","LDR turns the light ON","Nothing happens"],a:0,e:"Daytime: LDR detects more light → the controller keeps the street light OFF."},
+ {q:"What does a thermistor sense?",o:["Light","Temperature","Sound","Distance"],a:1,e:"A thermistor is a temperature sensor whose resistance changes when temperature changes."},
+ {q:"For a common NTC thermistor, when temperature INCREASES, resistance:",o:["Increases","Decreases","Stays constant","Becomes infinite"],a:1,e:"NTC thermistor: 🔥 Temperature increases → Resistance decreases; ❄️ Temperature decreases → Resistance increases."},
+ {q:"An IR sensor detects objects or movement using:",o:["Sound waves","Infrared light","Magnetic fields","Water pressure"],a:1,e:"An IR sensor uses infrared (IR) light — invisible to our eyes — to detect objects."},
+ {q:"What is the correct signal flow for an IR sensor?",o:["Object → Sensor → Reflection → IR light","IR light → Object → Reflection → Sensor detects object","Sensor → IR light → Detects → Object","Reflection → Sensor → Object → IR light"],a:1,e:"IR LED sends light → it hits an object → reflects back → the IR receiver detects it → sensor sends a signal."},
+ {q:"An ultrasonic sensor detects objects and measures distance using:",o:["Infrared light","Visible light","High-frequency sound waves","Magnetism"],a:2,e:"An ultrasonic sensor sends out high-frequency sound waves and listens for them bouncing back."},
+ {q:"What is the correct flow for an ultrasonic sensor?",o:["Object → Sensor → Sound wave → Echo","Sound wave → Object → Echo → Sensor → Distance","Echo → Sound wave → Sensor → Object","Distance → Sensor → Sound wave → Object"],a:1,e:"The sensor sends a sound wave → it hits an object and echoes back → the sensor receives the echo and calculates the distance."}
 ];
 
 const PUZZLES = [
- {t:"scramble",p:"Unscramble the word:",s:"UNIDORA",a:["ARDUINO"],h:"The board we learned about today"},
- {t:"scramble",p:"Unscramble the word:",s:"GOLANA",a:["ANALOG"],h:"Continuous values, 0 to 1023"},
- {t:"scramble",p:"Unscramble the word:",s:"TAIGIDL",a:["DIGITAL"],h:"HIGH or LOW only"},
- {t:"text",p:"I am the brain of the Arduino Uno. My name ends with 328P. Who am I?",a:["ATMEGA328P","ATMEGA","MICROCONTROLLER"],h:"AT_ _ _ _328P"},
- {t:"text",p:"How many analog pins does the Arduino Uno have? (A0 to A5)",a:["6","SIX"],h:"Count from A0 to A5"},
- {t:"text",p:"In binary, what number means the light is OFF?",a:["0","ZERO"],h:"Binary digits are 0 and 1"},
- {t:"text",p:"I connect the Arduino to your laptop, upload your code and give 5V power. What port am I?",a:["USB","USB PORT","USB TYPE-B","TYPE-B"],h:"Cable is blue in our slides"},
- {t:"order",p:"Put the steps in order: how the Arduino works",items:["Setup","Code","Compile","Upload","Run"],h:"Start with setup, finish with run"},
- {t:"order",p:"Put in order: Sense → Think → Act (Street light example)",items:["LDR senses darkness","Arduino checks the value","LED turns ON"],h:"Input → Brain → Output"},
- {t:"order",p:"Put in order: from idea to action",items:["Idea","ATmega","Programming","Arduino","Action"],h:"Idea first, LED glows last"}
+ {t:"scramble",p:"Unscramble the word:",s:"RONSSE",a:["SENSOR"],h:"A device that detects a change in surroundings"},
+ {t:"scramble",p:"Unscramble the word:",s:"MOTHRIRSTE",a:["THERMISTOR"],h:"A temperature sensor whose resistance changes with heat"},
+ {t:"scramble",p:"Unscramble the word:",s:"CILNARTSOU",a:["ULTRASONIC"],h:"Uses high-frequency sound waves to measure distance"},
+ {t:"text",p:"Which sensor's resistance DECREASES when there is more light?",a:["LDR","LIGHT DEPENDENT RESISTOR"],h:"Used in automatic street lights"},
+ {t:"text",p:"Which sensor detects darkness and turns an automatic street light ON at night?",a:["LDR","LIGHT DEPENDENT RESISTOR"],h:"Same sensor as above"},
+ {t:"text",p:"Which sensor uses infrared light to detect objects or movement?",a:["IR SENSOR","IR","INFRARED SENSOR"],h:"IR LED + IR receiver"},
+ {t:"text",p:"Fill the blank: Sound wave → Object → ____ → Sensor → Distance.",a:["ECHO"],h:"What bounces back after the sound wave hits the object"},
+ {t:"order",p:"Put the LDR night-time street light logic in order:",items:["Night falls","LDR detects less light","Street light turns ON"],h:"Less light in, light turns on"},
+ {t:"order",p:"Put the IR sensor's working steps in order:",items:["IR LED sends out infrared light","Light hits an object and reflects back","IR receiver detects the reflected light","Sensor sends a signal to the electronic system"],h:"IR light → Object → Reflection → Signal"},
+ {t:"order",p:"Put the ultrasonic sensor's working steps in order:",items:["Sensor sends out ultrasonic sound waves","Waves hit an object and bounce back","Sensor receives the echo","Sensor calculates the distance"],h:"Sound wave → Object → Echo → Distance"}
 ];
 
 const RAPID = [
- ["Arduino is a small programmable computer.",true],
- ["ATmega328P is the brain of Arduino Uno.",true],
- ["Digital pins can read values from 0 to 1023.",false],
- ["Analog pins read values from 0 to 1023.",true],
- ["A light switch is a good example of digital.",true],
- ["A volume knob is a good example of digital.",false],
- ["The USB port can upload code and give 5V power.",true],
- ["Arduino Uno has 14 digital pins (D0–D13).",true],
- ["Arduino Uno has 10 analog pins.",false],
- ["The ~ symbol marks PWM pins.",true],
- ["TX means Transmit and RX means Receive.",true],
- ["Binary 1 means OFF.",false],
- ["Binary 0 means OFF.",true],
- ["digitalRead() returns 0 or 1.",true],
- ["analogWrite() uses values from 0 to 1023.",false],
- ["analogWrite() uses values from 0 to 255.",true],
- ["Compile comes after Upload.",false],
- ["The DC power jack accepts about 7–12V.",true],
- ["A potentiometer is an analog input.",true],
- ["A push button gives a continuous range of values.",false],
- ["pinMode(pin, OUTPUT) is used to control an LED.",true],
- ["Pins A0–A5 are used for serial communication.",false]
+ ["A sensor detects a change and sends information to an electronic system.",true],
+ ["An LDR's resistance increases when there is more light.",false],
+ ["An LDR's resistance increases when there is less light.",true],
+ ["In daytime, an LDR keeps the automatic street light OFF.",true],
+ ["At night, an LDR turns the automatic street light ON.",true],
+ ["An LDR is a Light Dependent Resistor.",true],
+ ["A thermistor is a type of temperature sensor.",true],
+ ["For an NTC thermistor, resistance decreases as temperature increases.",true],
+ ["For an NTC thermistor, resistance increases as temperature increases.",false],
+ ["An IR sensor uses sound waves to detect objects.",false],
+ ["An IR sensor uses infrared light to detect objects or movement.",true],
+ ["The IR receiver detects the reflected infrared light.",true],
+ ["IR sensor flow: IR light → Object → Reflection → Sensor detects object.",true],
+ ["An ultrasonic sensor uses high-frequency sound waves.",true],
+ ["An ultrasonic sensor uses infrared light to measure distance.",false],
+ ["Ultrasonic sensor flow: Sound wave → Object → Echo → Sensor → Distance.",true],
+ ["Ultrasonic sensors calculate distance by timing the returning echo.",true],
+ ["A thermistor's resistance never changes with temperature.",false],
+ ["An IR LED sends out invisible infrared light.",true],
+ ["Ultrasonic sensors can be used to help a robotic arm sense obstacle distance.",true]
 ];
 
 /* ---------- SOUND ---------- */
@@ -152,18 +150,15 @@ function noise(d=.3,from=400,to=4000,v=.12,delay=0){
     src.connect(f); f.connect(g); g.connect(c.destination); src.start(t);
   }catch(e){}
 }
-/* correct: happy rising arpeggio + sparkle */
 const sOK=()=>{
   [523,659,784,1047].forEach((f,i)=>beep(f,.16,'triangle',.16,i*.07));
   [2093,2637,3136].forEach((f,i)=>beep(f,.12,'sine',.05,.28+i*.05));
 };
-/* wrong: sad buzzer wah-wah */
 const sBAD=()=>{
   beep(220,.22,'sawtooth',.13,0,150);
   beep(165,.35,'sawtooth',.13,.2,90);
   noise(.15,300,100,.06,0);
 };
-/* win: full fanfare with chords */
 const sWIN=()=>{
   const chord=(fs,t,d)=>fs.forEach(f=>beep(f,d,'triangle',.11,t));
   chord([523,659,784],0,.18); chord([523,659,784],.18,.18);
@@ -171,9 +166,7 @@ const sWIN=()=>{
   [1568,2093,2637,3136].forEach((f,i)=>beep(f,.15,'sine',.06,.9+i*.08));
   noise(.6,2000,8000,.05,.6);
 };
-/* soft encouragement (low scores) */
 const sTRY=()=>{[392,349,330,294].forEach((f,i)=>beep(f,.22,'sine',.12,i*.16))};
-/* UI sounds */
 const sCLICK=()=>{beep(880,.05,'square',.05); beep(1320,.05,'square',.04,.04)};
 const sPOP=n=>{beep(400+n*90,.09,'sine',.14,0,700+n*90)};
 const sWHOOSH=()=>{noise(.35,300,5000,.1); beep(300,.3,'sine',.04,0,900)};
@@ -196,7 +189,7 @@ const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math
 const esc=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
 function result(score,total,restart){
   const pct=Math.round(score/total*100);
-  const msg=pct>=90?"🏆 Arduino Master!":pct>=70?"🎉 Great job!":pct>=40?"👍 Good try – revise the slides!":"📚 Keep learning, you'll get it!";
+  const msg=pct>=90?"🏆 Sensor Master!":pct>=70?"🎉 Great job!":pct>=40?"👍 Good try – revise the slides!":"📚 Keep learning, you'll get it!";
   if(pct>=70) sWIN(); else sTRY();
   stage.innerHTML=`<div class="center"><div class="big">${msg.split(' ')[0]}</div>
   <h2>${msg.replace(/^\S+\s/,'')}</h2><p style="font-size:1.4rem">Score: <b>${score} / ${total}</b> (${pct}%)</p>
@@ -243,7 +236,7 @@ function startPuzzle(){
     <div class="q">${esc(p.p)}</div>${body}
     <div class="hint">💡 Hint: ${esc(p.h)}</div>
     <div class="fb" id="fb"></div>
-    <div id="ctl">${p.t==='order'?'<button class="btn ghost" id="reset">Reset</button>':'<button class="btn" id="chk">Check</button>'}</div>`;
+    <div id="ctl">${p.t==='order'?'<button class="btn ghost" id="reset">Show answer</button>':'<button class="btn" id="chk">Check</button>'}</div>`;
     const fb=document.getElementById('fb');
     function finish(ok,answerText){
       if(done)return;done=true;
@@ -267,7 +260,6 @@ function startPuzzle(){
         } else { sBAD(); seq.style.outline='2px solid var(--bad)'; setTimeout(()=>seq.style.outline='',300); }
       });
       document.getElementById('reset').onclick=()=>finish(false,p.items.join(' → '));
-      document.getElementById('reset').textContent='Show answer';
     } else {
       const inp=document.getElementById('ans'); inp.focus();
       const check=()=>{const v=inp.value.trim().toUpperCase();if(!v)return;finish(p.a.includes(v),p.a[0])};
@@ -281,33 +273,38 @@ function startPuzzle(){
 /* ---------- RAPID FIRE ---------- */
 function startRapid(){
   stage.innerHTML=`<div class="center"><div class="big">⚡</div><h2>Rapid Fire</h2>
-  <p>True or False? Answer as many as you can in <b>45 seconds</b>.<br>+1 for correct, wrong answers cost 3 seconds.</p>
+  <p>True or False? You get <b>25 seconds per question</b>. +1 for every correct answer.</p>
   <button class="btn" id="go">Start!</button></div>`;
   document.getElementById('go').onclick=()=>{sSTART();run()};
   function run(){
-    const qs=shuffle(RAPID);let i=0,score=0,streak=0,best=0,time=45,locked=false;
+    const qs=shuffle(RAPID);let i=0,score=0,streak=0,best=0,locked=false,iv=null;
     function show(){
       if(i>=qs.length){end();return}
-      stage.innerHTML=`<div class="meta"><span class="timer" id="tm">⏱ ${time}s</span><span>Score: ${score} &nbsp;🔥 Streak: ${streak}</span></div>
+      let time=25;
+      stage.innerHTML=`<div class="meta"><span class="timer" id="tm">⏱ ${time}s</span><span>Q ${i+1}/${qs.length} &nbsp;Score: ${score} &nbsp;🔥 Streak: ${streak}</span></div>
       <div class="q center" style="min-height:70px">${esc(qs[i][0])}</div>
       <div class="tf"><button class="opt" data-v="1">✔ TRUE</button><button class="opt" data-v="0">✘ FALSE</button></div>`;
+      locked=false;
+      clearInterval(iv);
+      iv=setInterval(()=>{
+        time--;if(time>0&&time<=5)sTICK();
+        const t=document.getElementById('tm');if(t)t.textContent='⏱ '+Math.max(time,0)+'s';
+        if(time<=0){clearInterval(iv);if(!locked){locked=true;streak=0;sBAD();advance()}}
+      },1000);
       stage.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{
-        if(locked)return;locked=true;
+        if(locked)return;locked=true;clearInterval(iv);
         const ok=(b.dataset.v==='1')===qs[i][1];
         b.classList.add(ok?'ok':'bad');
-        if(ok){score++;streak++;best=Math.max(best,streak);streak>=3?sSTREAK(streak):sOK()}else{streak=0;time=Math.max(0,time-3);sBAD()}
-        setTimeout(()=>{locked=false;i++;time>0?show():end()},350);
+        if(ok){score++;streak++;best=Math.max(best,streak);streak>=3?sSTREAK(streak):sOK()}else{streak=0;sBAD()}
+        advance();
       });
     }
-    const iv=setInterval(()=>{
-      time--;if(time>0&&time<=10)sTICK();const t=document.getElementById('tm');if(t)t.textContent='⏱ '+Math.max(time,0)+'s';
-      if(time<=0){clearInterval(iv);end()}
-    },1000);
+    function advance(){ setTimeout(()=>{i++;show()},350); }
     let ended=false;
     function end(){
       if(ended)return;ended=true;clearInterval(iv);
       if(score>=8)sWIN(); else sOVER();
-      stage.innerHTML=`<div class="center"><div class="big">${score>=10?'🏆':score>=6?'🎉':'👍'}</div><h2>Time's up!</h2>
+      stage.innerHTML=`<div class="center"><div class="big">${score>=10?'🏆':score>=6?'🎉':'👍'}</div><h2>Round complete!</h2>
       <p style="font-size:1.4rem">Score: <b>${score}</b> &nbsp;|&nbsp; Best streak: <b>${best}</b></p>
       <button class="btn" id="again">Play Again</button></div>`;
       document.getElementById('again').onclick=startRapid;
